@@ -1,0 +1,287 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>analytical</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-04-26"><meta name="DC.source" content="analytical.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">clear <span class="string">all</span>
+clc
+
+V_ac = 100;
+w_ac = 100;
+L_ac = 1e-3;
+
+V_dc_12 = 9*sqrt(3)*V_ac/(4*pi);
+V_dc_23 = 9*V_ac/(4*pi);
+
+V_dc_mode2 = V_dc_23:0.00005:V_dc_12;
+V_dc_mode1 = V_dc_12:0.00005:3*sqrt(3)*V_ac/pi;
+
+i_dc_mode1 = (pi/(3*w_ac*L_ac)).*((3*sqrt(3)*V_ac/pi) - V_dc_mode1);
+alpha = acos((2*pi.*V_dc_mode2)/(9*V_ac)) - pi/6;
+i_dc_mode2 = ((sqrt(3)*V_ac)/(2*w_ac*L_ac)).*sin(alpha + pi/6);
+
+i_dc = [i_dc_mode1, i_dc_mode2];
+V_dc = [V_dc_mode1, V_dc_mode2];
+
+p_out = V_dc_mode2.*i_dc_mode2;
+r_load = V_dc_mode2./i_dc_mode2;
+
+[p_max, p_max_index] = max(p_out)
+r_p_max = r_load(p_max_index)
+
+theta_ac = 0:5:360;
+gamma = 45;
+V_dc_b = ((3*sqrt(3)*V_ac)/(2*pi))*(cosd(gamma) + 1);
+i_dc_b = (pi/(3*w_ac*L_ac))*(((3*sqrt(3)*V_ac)/pi) - V_dc_b);
+i_ac_b = zeros(length(theta_ac));
+
+pos = find(theta_ac &lt;= 60 | theta_ac &gt;= 300+gamma);
+neg = find(theta_ac &gt;= 120+gamma &amp; theta_ac &lt;= 240);
+neg_slope_1 = find(theta_ac &gt; 60 &amp; theta_ac &lt; 60+gamma);
+neg_slope_2 = find(theta_ac &gt; 120 &amp; theta_ac &lt; 120+gamma);
+pos_slope_1 = find(theta_ac &gt; 240 &amp; theta_ac &lt; 240+gamma);
+pos_slope_2 = find(theta_ac &gt; 300 &amp; theta_ac &lt; 300+gamma);
+zero = find((theta_ac &gt;= 60+gamma &amp; theta_ac &lt;= 120) | (theta_ac &gt;= 240+gamma &amp; theta_ac &lt;= 300));
+
+i_ac_b(pos) = i_dc_b;
+i_ac_b(neg) = -i_dc_b;
+i_ac_b(neg_slope_1) = -(i_dc_b/45).*(theta_ac(neg_slope_1)-60) + i_dc_b;
+i_ac_b(neg_slope_2) = -(i_dc_b/45).*(theta_ac(neg_slope_2)-120);
+i_ac_b(pos_slope_1) = (i_dc_b/45).*(theta_ac(pos_slope_1)-240) - i_dc_b;
+i_ac_b(pos_slope_2) = (i_dc_b/45).*(theta_ac(pos_slope_2)-300);
+i_ac_b(zero) = 0;
+
+alpha = 10;
+V_dc_c = ((9*V_ac)/(2*pi))*cosd(alpha+30);
+i_dc_c = ((sqrt(3)*V_ac)/(2*w_ac*L_ac))*sind(alpha+30);
+i_ac_c = zeros(length(theta_ac));
+
+pos_c = find(theta_ac &gt;= alpha &amp; theta_ac &lt;= 60+alpha);
+neg_c = find(theta_ac &gt;= 180+alpha &amp; theta_ac &lt;= 240+alpha);
+neg_slope_c = find(theta_ac &gt; 60+alpha &amp; theta_ac &lt; 180+alpha);
+pos_slope_c_1 = find(theta_ac &lt; alpha);
+pos_slope_c_2 = find(theta_ac &gt; 240+alpha);
+
+i_ac_c(pos_c) = i_dc_c;
+i_ac_c(neg_c) = -i_dc_c;
+i_ac_c(neg_slope_c) = -(i_dc_c/60)*(theta_ac(neg_slope_c)-60-alpha) + i_dc_c;
+i_ac_c(pos_slope_c_1) = (i_dc_c/60)*(theta_ac(pos_slope_c_1)+60-alpha);
+i_ac_c(pos_slope_c_2) = (i_dc_c/60)*(theta_ac(pos_slope_c_2)-240-alpha) - i_dc_c;
+
+n = find(V_dc == V_dc_12);
+m = find(V_dc == V_dc_23);
+[V_dc_max,o] = max(V_dc);
+p = find(theta_ac == 60);
+q = find(theta_ac == 60+alpha);
+
+figure;
+plot(i_dc_mode1,V_dc_mode1)
+hold <span class="string">on</span>
+plot(i_dc_mode2,V_dc_mode2)
+legend(<span class="string">'Mode 1'</span>, <span class="string">'Mode 2'</span>)
+xlabel(<span class="string">'i_d_c (A)'</span>)
+ylabel(<span class="string">'V_d_c (V)'</span>)
+title(<span class="string">'Output DC voltage vs Output DC current'</span>)
+text(i_dc(o),V_dc(o),[num2str(V_dc_max),<span class="string">' V'</span>])
+text(i_dc(n),V_dc(n),[num2str(V_dc_12), <span class="string">' V'</span>])
+text(i_dc(m),V_dc(m),[num2str(V_dc_23), <span class="string">' V'</span>])
+saveas(gcf,<span class="string">'v-vs-i'</span>,<span class="string">'tiffn'</span>)
+
+figure;
+plot(r_load,p_out)
+xlabel(<span class="string">'r_l_o_a_d (\Omega)'</span>)
+ylabel(<span class="string">'p_o_u_t (W)'</span>)
+title(<span class="string">'Power Output vs Load Resistance'</span>)
+text(r_p_max,p_max,[<span class="string">'R_l_o_a_d at maximum power = '</span>, num2str(r_p_max), <span class="string">' \Omega'</span>])
+saveas(gcf,<span class="string">'p-vs-r'</span>,<span class="string">'tiffn'</span>)
+
+figure;
+plot(theta_ac, i_ac_b)
+xlabel(<span class="string">'\theta_a_c (deg)'</span>)
+ylabel(<span class="string">'i_a (A)'</span>)
+title(<span class="string">'Phase a current vs \theta_a_c for Step (b)'</span>)
+text(theta_ac(p),i_ac_b(p),[num2str(i_ac_b(p)),<span class="string">' A'</span>])
+saveas(gcf,<span class="string">'ia-vs-theta-b'</span>,<span class="string">'tiffn'</span>)
+
+figure;
+plot(theta_ac, i_ac_c)
+xlabel(<span class="string">'\theta_a_c (deg)'</span>)
+ylabel(<span class="string">'i_a (A)'</span>)
+title(<span class="string">'Phase a current vs \theta_a_c for Step (c)'</span>)
+text(theta_ac(q),i_ac_c(p),[num2str(i_ac_c(q)),<span class="string">' A'</span>])
+saveas(gcf,<span class="string">'ia-vs-theta-c'</span>,<span class="string">'tiffn'</span>)
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear all
+clc
+
+V_ac = 100;
+w_ac = 100;
+L_ac = 1e-3;
+
+V_dc_12 = 9*sqrt(3)*V_ac/(4*pi);
+V_dc_23 = 9*V_ac/(4*pi);
+
+V_dc_mode2 = V_dc_23:0.00005:V_dc_12;
+V_dc_mode1 = V_dc_12:0.00005:3*sqrt(3)*V_ac/pi;
+
+i_dc_mode1 = (pi/(3*w_ac*L_ac)).*((3*sqrt(3)*V_ac/pi) - V_dc_mode1);
+alpha = acos((2*pi.*V_dc_mode2)/(9*V_ac)) - pi/6;
+i_dc_mode2 = ((sqrt(3)*V_ac)/(2*w_ac*L_ac)).*sin(alpha + pi/6);
+
+i_dc = [i_dc_mode1, i_dc_mode2];
+V_dc = [V_dc_mode1, V_dc_mode2];
+
+p_out = V_dc_mode2.*i_dc_mode2;
+r_load = V_dc_mode2./i_dc_mode2;
+
+[p_max, p_max_index] = max(p_out)
+r_p_max = r_load(p_max_index)
+
+theta_ac = 0:5:360;
+gamma = 45;
+V_dc_b = ((3*sqrt(3)*V_ac)/(2*pi))*(cosd(gamma) + 1);
+i_dc_b = (pi/(3*w_ac*L_ac))*(((3*sqrt(3)*V_ac)/pi) - V_dc_b);
+i_ac_b = zeros(length(theta_ac));
+
+pos = find(theta_ac <= 60 | theta_ac >= 300+gamma);
+neg = find(theta_ac >= 120+gamma & theta_ac <= 240);
+neg_slope_1 = find(theta_ac > 60 & theta_ac < 60+gamma);
+neg_slope_2 = find(theta_ac > 120 & theta_ac < 120+gamma);
+pos_slope_1 = find(theta_ac > 240 & theta_ac < 240+gamma);
+pos_slope_2 = find(theta_ac > 300 & theta_ac < 300+gamma);
+zero = find((theta_ac >= 60+gamma & theta_ac <= 120) | (theta_ac >= 240+gamma & theta_ac <= 300));
+
+i_ac_b(pos) = i_dc_b;
+i_ac_b(neg) = -i_dc_b;
+i_ac_b(neg_slope_1) = -(i_dc_b/45).*(theta_ac(neg_slope_1)-60) + i_dc_b;
+i_ac_b(neg_slope_2) = -(i_dc_b/45).*(theta_ac(neg_slope_2)-120);
+i_ac_b(pos_slope_1) = (i_dc_b/45).*(theta_ac(pos_slope_1)-240) - i_dc_b;
+i_ac_b(pos_slope_2) = (i_dc_b/45).*(theta_ac(pos_slope_2)-300);
+i_ac_b(zero) = 0;
+
+alpha = 10;
+V_dc_c = ((9*V_ac)/(2*pi))*cosd(alpha+30);
+i_dc_c = ((sqrt(3)*V_ac)/(2*w_ac*L_ac))*sind(alpha+30);
+i_ac_c = zeros(length(theta_ac));
+
+pos_c = find(theta_ac >= alpha & theta_ac <= 60+alpha);
+neg_c = find(theta_ac >= 180+alpha & theta_ac <= 240+alpha);
+neg_slope_c = find(theta_ac > 60+alpha & theta_ac < 180+alpha);
+pos_slope_c_1 = find(theta_ac < alpha);
+pos_slope_c_2 = find(theta_ac > 240+alpha);
+
+i_ac_c(pos_c) = i_dc_c;
+i_ac_c(neg_c) = -i_dc_c;
+i_ac_c(neg_slope_c) = -(i_dc_c/60)*(theta_ac(neg_slope_c)-60-alpha) + i_dc_c;
+i_ac_c(pos_slope_c_1) = (i_dc_c/60)*(theta_ac(pos_slope_c_1)+60-alpha);
+i_ac_c(pos_slope_c_2) = (i_dc_c/60)*(theta_ac(pos_slope_c_2)-240-alpha) - i_dc_c;
+
+n = find(V_dc == V_dc_12);
+m = find(V_dc == V_dc_23);
+[V_dc_max,o] = max(V_dc);
+p = find(theta_ac == 60);
+q = find(theta_ac == 60+alpha);
+
+figure;
+plot(i_dc_mode1,V_dc_mode1)
+hold on
+plot(i_dc_mode2,V_dc_mode2)
+legend('Mode 1', 'Mode 2')
+xlabel('i_d_c (A)')
+ylabel('V_d_c (V)')
+title('Output DC voltage vs Output DC current')
+text(i_dc(o),V_dc(o),[num2str(V_dc_max),' V'])
+text(i_dc(n),V_dc(n),[num2str(V_dc_12), ' V'])
+text(i_dc(m),V_dc(m),[num2str(V_dc_23), ' V'])
+saveas(gcf,'v-vs-i','tiffn')
+
+figure;
+plot(r_load,p_out)
+xlabel('r_l_o_a_d (\Omega)')
+ylabel('p_o_u_t (W)')
+title('Power Output vs Load Resistance')
+text(r_p_max,p_max,['R_l_o_a_d at maximum power = ', num2str(r_p_max), ' \Omega'])
+saveas(gcf,'p-vs-r','tiffn')
+
+figure;
+plot(theta_ac, i_ac_b)
+xlabel('\theta_a_c (deg)')
+ylabel('i_a (A)')
+title('Phase a current vs \theta_a_c for Step (b)')
+text(theta_ac(p),i_ac_b(p),[num2str(i_ac_b(p)),' A'])
+saveas(gcf,'ia-vs-theta-b','tiffn')
+
+figure;
+plot(theta_ac, i_ac_c)
+xlabel('\theta_a_c (deg)')
+ylabel('i_a (A)')
+title('Phase a current vs \theta_a_c for Step (c)')
+text(theta_ac(q),i_ac_c(p),[num2str(i_ac_c(q)),' A'])
+saveas(gcf,'ia-vs-theta-c','tiffn')
+        
+##### SOURCE END #####
+--></body></html>
